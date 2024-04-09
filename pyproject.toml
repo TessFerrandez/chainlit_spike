@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "chainlit-spike"
+version = "0.1.0"
+description = ""
+authors = ["Tess Ferrandez <tferrand@microsoft.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+langchain-openai = "^0.1.1"
+langchain = "^0.1.14"
+chainlit = "^1.0.502"
+chromadb = "^0.4.24"
+numexpr = "^2.10.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
