@@ -1,9 +1,10 @@
 import os
 
-from langchain_openai import AzureChatOpenAI
 from langchain.prompts import ChatPromptTemplate
+from langchain_community.callbacks import get_openai_callback
+from langchain.callbacks.openai_info import OpenAICallbackHandler
 from langchain_core.output_parsers import StrOutputParser
-from langchain_core.runnables import RunnableConfig
+from langchain_openai import AzureChatOpenAI
 from personas.persona import Persona
 
 import chainlit as cl
@@ -19,7 +20,7 @@ class ChattyMcChatface(Persona):
             temperature=0.5,
             deployment_name=AZURE_OPENAI_CHAT_DEPLOYMENT,
             api_version=AZURE_OPENAI_CHAT_DEPLOYMENT_VERSION,
-            streaming=True
+            callbacks=[OpenAICallbackHandler()]
         )
         prompt = ChatPromptTemplate.from_messages(
             [
@@ -30,15 +31,16 @@ class ChattyMcChatface(Persona):
                 ("human", "{question}"),
             ]
         )
-        self.runnable = prompt | llm | StrOutputParser()
+        self.chain = prompt | llm | StrOutputParser()
         await cl.Message(content="Hello! I'm Chatty McChatface. I'm here to chat with you about anything you want!").send()
 
     async def on_message(self, message: cl.Message):
         output_message = cl.Message(content="")
 
-        async for chunk in self.runnable.astream(
-            { "question": message.content },
-            config=RunnableConfig(callbacks=[cl.LangchainCallbackHandler()])
-        ):
-            await output_message.stream_token(chunk)
+        with get_openai_callback() as cb:
+            output_message.content = self.chain.invoke({ "question": message.content })
+            print(cb)
+            tokens = cb.total_tokens
+
         await output_message.send()
+        await cl.Message(content=f"You spent {tokens} tokens").send()
