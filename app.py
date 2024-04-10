@@ -35,6 +35,7 @@ async def chat_profile():
 
 @cl.on_chat_start
 async def on_chat_start():
+    persona = None
     chat_profile = cl.user_session.get("chat_profile")
     if chat_profile == "Chatty McChatface":
         persona = ChattyMcChatface()
