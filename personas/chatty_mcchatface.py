@@ -32,7 +32,10 @@ import chainlit as cl
 from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory
 
-
+API_KEY = os.getenv("AZURE_OPENAI_KEY")
+BASE_URL = os.getenv("AZURE_OPENAI_ENDPOINT")
+MODEL_VERSION = os.getenv("AZURE_OPENAI_CHAT_DEPLOYMENT_VERSION")
+DEPLOYMENT = os.getenv("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME")
 AZURE_OPENAI_CHAT_DEPLOYMENT_VERSION = os.getenv("AZURE_OPENAI_CHAT_DEPLOYMENT_VERSION")
 AZURE_OPENAI_CHAT_DEPLOYMENT = os.getenv("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME")
 
@@ -42,8 +45,10 @@ class ChattyMcChatface(Persona):
             cl.Action(name="action_button", value="example_value", description="Click me!")
         ]
         llm = AzureChatOpenAI(
-            deployment_name=AZURE_OPENAI_CHAT_DEPLOYMENT,
-            api_version=AZURE_OPENAI_CHAT_DEPLOYMENT_VERSION,
+            azure_endpoint=BASE_URL,
+            api_key=API_KEY,
+            api_version=MODEL_VERSION,
+            model=DEPLOYMENT,
             temperature=0.5,
             callbacks=[OpenAICallbackHandler()]
         )
@@ -53,8 +58,6 @@ class ChattyMcChatface(Persona):
             callbacks=[OpenAICallbackHandler()],
             verbose=True,
             memory=ConversationBufferMemory(),
-            output_parser=StrOutputParser(),
-            callbacks=[OpenAICallbackHandler()]
         )
         await cl.Message(content="Hello! I'm Chatty McChatface. I'm here to chat with you about anything you want!").send()
 
