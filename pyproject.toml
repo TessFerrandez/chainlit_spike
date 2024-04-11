@@ -12,6 +12,8 @@ langchain = "^0.1.14"
 chainlit = "^1.0.502"
 chromadb = "^0.4.24"
 numexpr = "^2.10.0"
+langchain-community = "^0.0.32"
+arxiv = "^2.1.0"
 
 
 [build-system]

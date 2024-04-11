@@ -4,6 +4,7 @@ from personas.chatty_mcchatface import ChattyMcChatface
 from personas.doc_summarizer import DocSummarizer
 from personas.dr_ragilicious import DrRAGilicious
 from personas.mr_andersson import MrAndersson
+from personas.paper_boy import PaperBoy
 
 from dotenv import load_dotenv, find_dotenv
 
@@ -21,6 +22,10 @@ async def chat_profile():
         cl.ChatProfile(
             name="Doc Summarizer",
             markdown_description="I'll summarize all your docz",
+        ),
+        cl.ChatProfile(
+            name="Paper Boy",
+            markdown_description="I'll summarize all your paperz",
         ),
         cl.ChatProfile(
             name="Dr. RAGilicious",
@@ -45,6 +50,8 @@ async def on_chat_start():
         persona = DrRAGilicious()
     elif chat_profile == "Mr. Andersson":
         persona = MrAndersson()
+    elif chat_profile == "Paper Boy":
+        persona = PaperBoy()
 
     if persona:
         await persona.on_chat_start()
