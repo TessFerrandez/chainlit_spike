@@ -18,13 +18,14 @@ class PaperBoy(Persona):
     async def summarize_doc(self, topic):
         retriever = ArxivRetriever(load_max_docs=1)
         docs = retriever.get_relevant_documents(query=topic)
-        print(docs[0])
+        print(docs[0].metadata)
+        await cl.Message(f"Got the doc! {docs[0].metadata['Title']}").send()
         summary = self.summarize_chain.invoke(docs)
         await cl.Message(f"Heres the summary: {summary["output_text"]}").send()
 
 
     async def on_chat_start(self):
-        await cl.Message(content="Hello! I'm Paper Boy. Gimme a URL plz!").send()
+        await cl.Message(content="Hello! I'm Paper Boy. Gimme a topic!").send()
         llm = AzureChatOpenAI(
             api_version=AZURE_OPENAI_CHAT_DEPLOYMENT_VERSION,
             deployment_name=AZURE_OPENAI_CHAT_DEPLOYMENT,
