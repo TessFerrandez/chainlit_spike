@@ -14,6 +14,8 @@ chromadb = "^0.4.24"
 numexpr = "^2.10.0"
 langchain-community = "^0.0.32"
 arxiv = "^2.1.0"
+pypdf = "^4.2.0"
+validators = "^0.28.0"
 
 
 [build-system]
