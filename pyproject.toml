@@ -16,7 +16,11 @@ langchain-community = "^0.0.32"
 arxiv = "^2.1.0"
 pypdf = "^4.2.0"
 validators = "^0.28.0"
+tiktoken = "^0.6.0"
 
+
+[tool.poetry.group.dev.dependencies]
+ipykernel = "^6.29.4"
 
 [build-system]
 requires = ["poetry-core"]

@@ -3,10 +3,9 @@ import os
 import chainlit as cl
 
 from langchain_core.prompts import PromptTemplate
-from langchain_core.output_parsers.string  import StrOutputParser
-from langchain.chains.summarize import load_summarize_chain
+from langchain_core.output_parsers.string import StrOutputParser
 from langchain_community.document_loaders import PyPDFLoader
-from langchain_core.documents.base import Document 
+from langchain_core.documents.base import Document
 from langchain_openai import AzureChatOpenAI
 from langchain_text_splitters import TokenTextSplitter, RecursiveCharacterTextSplitter
 import validators
@@ -35,6 +34,7 @@ levels = {"beginner": "primary school",
 
 PROMPT = PromptTemplate(template=prompt_template, input_variables=["text"]) 
 
+
 class PaperBoy(Persona):
     async def summarize_doc(self, url):
         level = "intermediate"
@@ -42,7 +42,7 @@ class PaperBoy(Persona):
         if not is_url:
             await cl.Message(f"{url} is not a valid url... Try again").send()
             return
-        
+
         loader = PyPDFLoader(url)
         docs = loader.load()
 
@@ -52,7 +52,6 @@ class PaperBoy(Persona):
         summary = self.summarize_chain.invoke({ "text": Document(page_content=text), "level": levels["beginner"]})
         await cl.Message(f"Heres the summary: {summary}").send()
 
-
     async def on_chat_start(self):
         await cl.Message(content="Hello! I'm Paper Boy. Gimme a topic!").send()
         llm = AzureChatOpenAI(
@@ -61,7 +60,6 @@ class PaperBoy(Persona):
             temperature=0.0,
         )
         self.summarize_chain = PROMPT | llm | StrOutputParser()
-
 
     async def on_message(self, message):
         await self.summarize_doc(message.content)
