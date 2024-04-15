@@ -8,7 +8,7 @@ from langchain.chains.summarize import load_summarize_chain
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_core.documents.base import Document 
 from langchain_openai import AzureChatOpenAI
-from langchain_text_splitters import TokenTextSplitter
+from langchain_text_splitters import TokenTextSplitter, RecursiveCharacterTextSplitter
 import validators
 from personas.persona import Persona
 
@@ -17,17 +17,27 @@ AZURE_OPENAI_CHAT_DEPLOYMENT_VERSION = os.getenv("AZURE_OPENAI_CHAT_DEPLOYMENT_V
 AZURE_OPENAI_CHAT_DEPLOYMENT = os.getenv("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME")
 AZURE_OPENAI_EMBEDDINGS_DEPLOYMENT = os.getenv("AZURE_OPENAI_EMBEDDINGS_DEPLOYMENT")
 
-prompt_template = """Summariase each section of this academic paper for a {level} audience.
-                        This is the content:
 
-                    {text}
-                    """
+prompt_template = """I want you to act as a research paper summarizer for a {level} audience.
+
+                        I will provide you with a research paper on a specific topic. 
+                        You will create a summary of the main points in the paper. You should include any personal opinions or interpretations.
+                        The summary should be approximately 1000 words long.
+
+                        The text from the paper is:
+
+                        {text}"""
+
+# prompt_template = """wow this is an easy prompt: {text}"""
+
+levels = {"beginner": "primary school",
+          "expert": "PhD student",}
 
 PROMPT = PromptTemplate(template=prompt_template, input_variables=["text"]) 
 
 class PaperBoy(Persona):
     async def summarize_doc(self, url):
-        level = "beginner"
+        level = "intermediate"
         is_url = validators.url(url)
         if not is_url:
             await cl.Message(f"{url} is not a valid url... Try again").send()
@@ -35,13 +45,11 @@ class PaperBoy(Persona):
         
         loader = PyPDFLoader(url)
         docs = loader.load()
-        text = docs[0].page_content
 
-        splitter = TokenTextSplitter(chunk_size=5000, chunk_overlap=0)
-        text_input = splitter.split_text(text)[0]
-
+        text = "".join([doc.page_content for doc in docs])
         await cl.Message(f"Got the doc from {url}!!").send()
-        summary = self.summarize_chain.invoke({ "text": Document(page_content=text_input), "level": level})
+        total = len(docs)
+        summary = self.summarize_chain.invoke({ "text": Document(page_content=text), "level": levels["beginner"]})
         await cl.Message(f"Heres the summary: {summary}").send()
 
 
