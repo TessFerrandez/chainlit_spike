@@ -12,7 +12,12 @@ langchain = "^0.1.14"
 chainlit = "^1.0.502"
 chromadb = "^0.4.24"
 numexpr = "^2.10.0"
+spacy-fastlang = "^2.1.0"
+langdetect = "^1.0.9"
 
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.4.4"
 
 [build-system]
 requires = ["poetry-core"]
